@@ -47,7 +47,7 @@ export default class GameRoom extends React.Component {
   }
 
   setInitialGameState() {
-    const gameStateRef = new Firebase(`https://avalonline.firebaseio.com/games/${this.props.roomCode}/gameState`);
+    const gameStateRef = new Firebase(`https://avalon-online-53e63.firebaseio.com/games/${this.props.roomCode}/gameState`);
     gameStateRef.once("value", (snapshot) => {
       const gameState = snapshot.val();
       if (!gameState || !gameState.questLeader) {
@@ -103,7 +103,7 @@ export default class GameRoom extends React.Component {
   }
 
   componentDidMount() {
-    const gameStateRef = new Firebase(`https://avalonline.firebaseio.com/games/${this.props.roomCode}/gameState`);
+    const gameStateRef = new Firebase(`https://avalon-online-53e63.firebaseio.com/games/${this.props.roomCode}/gameState`);
     gameStateRef.on("value", snapshot => {
       this.setState({'gameState': snapshot.val()})
     });
@@ -136,7 +136,7 @@ export default class GameRoom extends React.Component {
   }
 
   updateCurrentState(updatedState) {
-    const gameStateRef = new Firebase(`https://avalonline.firebaseio.com/games/${this.props.roomCode}/gameState`);
+    const gameStateRef = new Firebase(`https://avalon-online-53e63.firebaseio.com/games/${this.props.roomCode}/gameState`);
     gameStateRef.update(updatedState);
   }
 
@@ -458,7 +458,7 @@ export default class GameRoom extends React.Component {
     e.preventDefault();
 
     if (window.confirm("Are you want to restart the game and lose all progress?")) {
-      const gameStateRef = new Firebase(`https://avalonline.firebaseio.com/games/${this.props.roomCode}/gameState`);
+      const gameStateRef = new Firebase(`https://avalon-online-53e63.firebaseio.com/games/${this.props.roomCode}/gameState`);
       gameStateRef.set({});
 
       window.location.reload();

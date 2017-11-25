@@ -2,7 +2,8 @@ import React from 'react';
 import JoinRoom from './components/JoinRoom.jsx';
 // import * as firebase from 'firebase';
 import Firebase from 'firebase';
-import GameRoom from './components/GameRoom.jsx'; //delete!
+import GameRoom from './components/GameRoom.jsx';
+import SpyfallGameRoom from './components/SpyfallGameRoom.jsx';
 import SpectatorRoom from './components/SpectatorRoom.jsx'; //delete!
 import _ from 'lodash';
 import queryString from 'query-string';
@@ -27,9 +28,7 @@ export default class App extends React.Component {
   }
 
   cleanupOldRooms() {
-    var ref = new Firebase('https://avalonline.firebaseio.com/games');
-    // var ref = firebase.database('https://avalonline.firebaseio.com/games');
-    // var app = firebase.initializeApp({ ... });
+    var ref = new Firebase('https://avalon-online-53e63.firebaseio.com/games');
     var now = Date.now();
     var cutoff = now - 4 * 60 * 60 * 1000;
     var old = ref.orderByChild('timestamp').startAt(cutoff).limitToLast(1);
@@ -41,7 +40,7 @@ export default class App extends React.Component {
   componentDidMount() {
     this.cleanupOldRooms();
 
-    const ref = new Firebase(`https://avalonline.firebaseio.com/games`);
+    const ref = new Firebase(`https://avalon-online-53e63.firebaseio.com/games`);
     ref.on("value", (snapshot) => {
       let rooms = [];
       snapshot.forEach((childSnapshot) => {
@@ -86,7 +85,7 @@ export default class App extends React.Component {
 
     this.setState({ currentRoomCode: roomCode })
 
-    const fbGame = new Firebase(`https://avalonline.firebaseio.com/games/${roomCode}`);
+    const fbGame = new Firebase(`https://avalon-online-53e63.firebaseio.com/games/${roomCode}`);
     const roomCodeObj = {
       'roomCode': roomCode,
       'dateCreated': Date.now(),
@@ -120,7 +119,7 @@ export default class App extends React.Component {
 
     return (
       <div>
-        <h2>Avalonline 2.0 and Spyfall</h2>
+        <h2>avalon-online-53e63 2.0 and Spyfall</h2>
         { lastHandState ? lastHand : null }
         <p>Join an existing game: </p>
         { this.getRoomList() }
@@ -157,7 +156,7 @@ export default class App extends React.Component {
 
   //if debug==true vvvvvv -----------------------------------------------------------------------------------------------
   populatePlayerState() {
-    const ref = new Firebase(`https://avalonline.firebaseio.com/games/${this.getDefaultRoomCode()}/players`);
+    const ref = new Firebase(`https://avalon-online-53e63.firebaseio.com/games/${this.getDefaultRoomCode()}/players`);
     ref.on("value", (snapshot) => {
       let players = [];
       snapshot.forEach((childSnapshot) => {
@@ -170,12 +169,11 @@ export default class App extends React.Component {
   }
 
   getGameRoom() {
-    if (this.state.players.length < 3) return null;
     if (this.getURLParams().spyfall) {
       return (
-        <GameRoom
+        <SpyfallGameRoom
           roomCode={this.getDefaultRoomCode()}
-          playerName={this.state.wantsToJoinLastHand ? this.state.playerName : this.getURLParams().playerName}
+          playerName={(this.state.wantsToJoinLastHand && this.state.playerName) || this.getURLParams().playerName}
           players={this.state.players}
         />
       );
@@ -206,7 +204,7 @@ export default class App extends React.Component {
   }
 
   render() {
-    if (this.getURLParams().debug || this.state.wantsToJoinLastHand) {
+    if (this.state.players.length > 0 && this.getURLParams().debug || this.state.wantsToJoinLastHand) {
       if (this.getURLParams().isSpectator || this.state.isSpectator) {
         return this.getSpectatorRoom();
       }

@@ -5,6 +5,8 @@ import _ from 'lodash';
 import globals from '../globals.js'
 import RoleList from './RoleList.jsx';
 import YourInfo from './YourInfo.jsx';
+import jsonfile from 'jsonfile';
+import rolesJson from '../roles.json';
 
 const propTypes = {
   roomCode: PropTypes.string.isRequired,
@@ -21,19 +23,7 @@ export default class SpyfallGameRoom extends React.Component {
 
     this.state = {
       gameState: {
-        numProposals: 0,
-        currentQuestNum: 0,
-        questLeader: null,
-        proposedPlayers: [],
-        lastProposedPlayers: [],
-        questResults: ["N/A", "N/A", "N/A", "N/A", "N/A"],
-        questVoteResults: [],
-        questVotePlayersWhoVoted: [],
-        lastQuestVoteResults: "n/a",
-        isProposalVoting: false,
-        // proposalVotes: {},
-        // lastProposalVotes: {},
-        isQuestVoting: false,
+        isPaused: false,
       },
     }
   }
@@ -54,14 +44,34 @@ export default class SpyfallGameRoom extends React.Component {
   }
 
   componentDidMount() {
-    const gameStateRef = new Firebase(`https://avalonline.firebaseio.com/games/${this.props.roomCode}/gameState`);
+    console.log('CS- this.props:');
+    console.log(this.props);
+
+    const gameStateRef = new Firebase(`https://avalon-online-53e63.firebaseio.com/games/${this.props.roomCode}`);
     gameStateRef.on("value", snapshot => {
-      this.setState({'gameState': snapshot.val()})
+      this.setState(snapshot.val())
+    });
+
+    this.setInitialGameState();
+  }
+
+  setInitialGameState() {
+    const gameStateRef = new Firebase(`https://avalon-online-53e63.firebaseio.com/games/${this.props.roomCode}/gameState`);
+    gameStateRef.once("value", (snapshot) => {
+      const gameState = snapshot.val();
+      if (!gameState || !gameState.isPaused) {
+        gameStateRef.update({isPaused: false});
+      }
+
+      window.history.pushState({}, "Spyfall",
+        "http://localhost:3001/?spyfall=true&debug=true&playerName=" + this.props.playerName
+        + "&roomCode=" + this.props.roomCode
+      );
     });
   }
 
   updateCurrentState(updatedState) {
-    const gameStateRef = new Firebase(`https://avalonline.firebaseio.com/games/${this.props.roomCode}/gameState`);
+    const gameStateRef = new Firebase(`https://avalon-online-53e63.firebaseio.com/games/${this.props.roomCode}/gameState`);
     gameStateRef.update(updatedState);
   }
 
@@ -73,6 +83,13 @@ export default class SpyfallGameRoom extends React.Component {
       <div>
         <div>
           Current Time: {this.state.gameState.startTime}
+          {
+            Object.keys(rolesJson).map(location => {
+              return (
+                <span>{location}</span>
+              );
+            })
+          }
         </div>
       </div>
     );
@@ -118,14 +135,16 @@ export default class SpyfallGameRoom extends React.Component {
         { players }
       </form>
     );
-
   }
 
   render() {
+    console.log('CS- this.state2:');
+    console.log(this.state);
+
     return (
       <div className={"outer-div"}>
       <div className="inner-div">
-        <h1>Game Room: {this.props.roomCode}</h1>
+        <h1>Spyfall Game Room: {this.props.roomCode}</h1>
         <span>
           There are { this.props.players.filter(p => {
             return globals.roleIsEvil(p.role)
@@ -141,7 +160,7 @@ export default class SpyfallGameRoom extends React.Component {
         <br/>
         <br/>
         <h2>Your name is: <span className='bold'>{ this.props.playerName }</span></h2>
-        <h2>Your role is: <span className='bold'>{ this.getCurrentPlayer().role }</span></h2>
+        <h2>Your role is: <span className='bold'>{ this.getCurrentPlayer() && this.getCurrentPlayer().role }</span></h2>
       </div>
       </div>
     );

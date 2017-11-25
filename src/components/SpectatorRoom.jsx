@@ -35,7 +35,7 @@ export default class GameRoom extends React.Component {
   }
 
   componentDidMount() {
-    const gameStateRef = new Firebase(`https://avalonline.firebaseio.com/games/${this.props.roomCode}/gameState`);
+    const gameStateRef = new Firebase(`https://avalon-online-53e63.firebaseio.com/games/${this.props.roomCode}/gameState`);
     gameStateRef.on("value", snapshot => {
       this.setState({'gameState': snapshot.val()})
     });
@@ -181,7 +181,7 @@ export default class GameRoom extends React.Component {
       <div className={"outer-div spectator"}>
       <div className="inner-div inner-spectator">
         <div className="flex-center-horiz">
-          <h1>Avalonline</h1>
+          <h1>avalon-online-53e63</h1>
           <span className='roomCode'>{this.props.roomCode}</span>
         </div>
         { this.getPermanentGameStateDiv() }

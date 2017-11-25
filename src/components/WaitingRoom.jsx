@@ -27,7 +27,7 @@ export default class WaitingRoom extends React.Component {
   }
 
   populatePlayerState() {
-    const ref = new Firebase(`https://avalonline.firebaseio.com/games/${this.props.roomCode}/players`);
+    const ref = new Firebase(`https://avalon-online-53e63.firebaseio.com/games/${this.props.roomCode}/players`);
     ref.on("value", (snapshot) => {
       let players = [];
       snapshot.forEach((childSnapshot) => {
@@ -40,11 +40,11 @@ export default class WaitingRoom extends React.Component {
   }
 
   addCurrentPlayerToFirebase() {
-    const gameRef = new Firebase(`https://avalonline.firebaseio.com/games/${this.props.roomCode}/hasStarted`);
+    const gameRef = new Firebase(`https://avalon-online-53e63.firebaseio.com/games/${this.props.roomCode}/hasStarted`);
     gameRef.once("value", (snapshot) => {
       let hasStarted = snapshot.val();
       if (!hasStarted) {
-        const ref = new Firebase(`https://avalonline.firebaseio.com/games/${this.props.roomCode}/players/${this.props.playerName}`);
+        const ref = new Firebase(`https://avalon-online-53e63.firebaseio.com/games/${this.props.roomCode}/players/${this.props.playerName}`);
         ref.update({
           playerName: this.props.playerName,
           isSpectator: this.props.isSpectator,
@@ -60,10 +60,19 @@ export default class WaitingRoom extends React.Component {
     this.populatePlayerState();
 
     // listen to hasStarted
-    const gameRef = new Firebase(`https://avalonline.firebaseio.com/games/${this.props.roomCode}/hasStarted`);
+    const gameRef = new Firebase(`https://avalon-online-53e63.firebaseio.com/games/${this.props.roomCode}/hasStarted`);
     gameRef.on("value", (snapshot) => {
       let hasStarted = snapshot.val();
-      this.setState({'hasStarted': hasStarted})
+
+      const gameRef = new Firebase(`https://avalon-online-53e63.firebaseio.com/games/${this.props.roomCode}/gameName`);
+      gameRef.on("value", (snapshot) => {
+        let gameName = snapshot.val();
+        this.setState({
+          'gameName': gameName,
+          'hasStarted': hasStarted,
+        });
+      });
+
     });
   }
 
@@ -77,7 +86,7 @@ export default class WaitingRoom extends React.Component {
 
     let i = 0;
     this.state.players.forEach((player) => {
-      const playerRef = new Firebase(`https://avalonline.firebaseio.com/games/${this.props.roomCode}/players/${player.playerName}`);
+      const playerRef = new Firebase(`https://avalon-online-53e63.firebaseio.com/games/${this.props.roomCode}/players/${player.playerName}`);
       playerRef.update({
         role: roleNames[i],
       });
@@ -85,14 +94,13 @@ export default class WaitingRoom extends React.Component {
       i+=1;
     });
 
-    this.setState({gameName});
-
-    const gameRef = new Firebase(`https://avalonline.firebaseio.com/games/${this.props.roomCode}`);
+    const gameRef = new Firebase(`https://avalon-online-53e63.firebaseio.com/games/${this.props.roomCode}`);
     gameRef.update({
       hasStarted: true,
       gameName: gameName,
-      startTime: Date.now(),
     });
+
+    this.setState({gameName});
   }
 
   getPlayerRow(playerData) {
@@ -125,7 +133,7 @@ export default class WaitingRoom extends React.Component {
     return (
       <div>
         <h1> Waiting Room </h1>
-        <p> Go to cschubiner.github.io/avalon-online and enter the room code to join! </p>
+        <p> Go to cschubiner.github.io/games and enter the room code to join! </p>
         <span>Room Code: </span>
         <span>{this.props.roomCode}</span>
         <h3> Players </h3>
