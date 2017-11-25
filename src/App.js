@@ -119,7 +119,7 @@ export default class App extends React.Component {
 
     return (
       <div>
-        <h2>avalon-online-53e63 2.0 and Spyfall</h2>
+        <h2>AVALON 2.0 and Spyfall</h2>
         { lastHandState ? lastHand : null }
         <p>Join an existing game: </p>
         { this.getRoomList() }
