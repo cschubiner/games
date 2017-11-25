@@ -133,7 +133,7 @@ export default class GameRoom extends React.Component {
     for (var key in this.state.gameState.proposalVotes) {
       if (this.state.gameState.proposalVotes.hasOwnProperty(key)) {
         // alert(key + " -> " + this.state.gameState.proposalVotes[key]);
-        if (this.state.gameState.proposalVotes[key] != "n/a") {
+        if (this.state.gameState.proposalVotes[key] !== "n/a") {
           voteCount += 1;
         }
       }

@@ -112,7 +112,7 @@ export default class GameRoom extends React.Component {
   }
 
   advanceQuestLeader(e) {
-    if (e != null) {
+    if (e !== null) {
       e.preventDefault();
     }
     let newLeader = null;
@@ -363,7 +363,7 @@ export default class GameRoom extends React.Component {
 
         const proposedPlayers = globals.fbArr(this.state.gameState.proposedPlayers);
         const questVotePlayersWhoVoted = globals.fbArr(this.state.gameState.questVotePlayersWhoVoted);
-        const shouldShowVoteButtons = proposedPlayers.indexOf(this.getCurrentPlayer().playerName) != -1 && questVotePlayersWhoVoted.indexOf(this.getCurrentPlayer().playerName) === -1;
+        const shouldShowVoteButtons = proposedPlayers.indexOf(this.getCurrentPlayer().playerName) !== -1 && questVotePlayersWhoVoted.indexOf(this.getCurrentPlayer().playerName) === -1;
 
         let questVoteResults = globals.fbArr(this.state.gameState.questVoteResults);
         if (questVoteResults.length === this.numPlayersOnQuests()[this.state.gameState.currentQuestNum]) {
@@ -413,7 +413,7 @@ export default class GameRoom extends React.Component {
 
     } else {
 
-      const haveIVoted = this.state.gameState.proposalVotes[this.getCurrentPlayer().playerName] != "n/a"
+      const haveIVoted = this.state.gameState.proposalVotes[this.getCurrentPlayer().playerName] !== "n/a"
 
       const proposalButtons = (
         <div>
@@ -442,7 +442,7 @@ export default class GameRoom extends React.Component {
     for (var key in this.state.gameState.proposalVotes) {
       if (this.state.gameState.proposalVotes.hasOwnProperty(key)) {
         // alert(key + " -> " + this.state.gameState.proposalVotes[key]);
-        if (this.state.gameState.proposalVotes[key] != "n/a") {
+        if (this.state.gameState.proposalVotes[key] !== "n/a") {
           voteCount += 1;
         }
       }
