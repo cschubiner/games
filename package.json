@@ -2,7 +2,7 @@
   "name": "games",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https:/cschubiner.github.io/games",
+  "homepage": "https://cschubiner.github.io/games",
   "dependencies": {
     "amplify-store": "^0.1.0",
     "firebase": "^2.4.2",
