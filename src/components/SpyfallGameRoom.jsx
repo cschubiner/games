@@ -30,9 +30,7 @@ export default class SpyfallGameRoom extends React.Component {
 
   // this is the controlling player. it is the player that corresponds to this browser
   getCurrentPlayer() {
-    return this.players().find(p =>
-      p.playerName === this.props.playerName
-    );
+    return this.findPlayerByName(this.props.playerName);
   }
 
   amIEvil() {
@@ -63,12 +61,38 @@ export default class SpyfallGameRoom extends React.Component {
     this.setInitialGameState();
   }
 
+  findPlayerByName(playerName) {
+    return this.players().find(p =>
+      p.playerName === playerName
+    );
+  }
+
+  clickedPlayer(selectedPlayerName, e) {
+    console.log('CS- selectedPlayerName:');
+    console.log(selectedPlayerName);
+
+    const currPlayer = this.getCurrentPlayer();
+    const playerRef = new Firebase(`https://avalon-online-53e63.firebaseio.com/games/${this.props.roomCode}/players/${currPlayer.playerName}`);
+
+    if (!currPlayer.selectedPlayerName) {
+      this.setState({selectedPlayerName: selectedPlayerName});
+      playerRef.update({
+        selectedPlayerName,
+        chosePlayerAt: Date.now() - this.state.gameState.startTime,
+      });
+    }
+  }
+
   setInitialGameState() {
     const gameStateRef = new Firebase(`https://avalon-online-53e63.firebaseio.com/games/${this.props.roomCode}/gameState`);
     gameStateRef.once("value", (snapshot) => {
       const gameState = snapshot.val();
       if (!gameState || !gameState.isPaused) {
         gameStateRef.update({isPaused: false});
+      }
+
+      if (!gameState.startTime) {
+        gameStateRef.update({startTime: Date.now()});
       }
 
       let location = gameState && gameState.location;
@@ -146,13 +170,17 @@ export default class SpyfallGameRoom extends React.Component {
   getPlayerList() {
     let players = [];
 
+    const currPlayer = this.getCurrentPlayer();
+    const chosenPlayer = currPlayer.selectedPlayerName;
+    const chosePlayerAt = currPlayer.chosePlayerAt;
+
     this.sortedPlayers().forEach( player => {
       players.push(
         <div className="checkbox-div">
-          <input type="checkbox" name="??" value={ player.playerName } onClick={this.selectedPlayer.bind(this, player.playerName)}
-            checked={this.playerIsAProposedPlayer(player.playerName) ? true : false} className='checkbox'/>
-          <span className={"checkboxtext" + (true ? " bold" : "")} onClick={this.selectedPlayer.bind(this, player.playerName)}>
-            { player.playerName }
+          <input type="checkbox" name="??" value={ player.playerName } onClick={this.clickedPlayer.bind(this, player.playerName)}
+            checked={this.state.selectedPlayerName === player.playerName} className='checkbox'/>
+          <span className={"checkboxtext" + (true ? " bold" : "")} onClick={this.clickedPlayer.bind(this, player.playerName)}>
+            { player.playerName } { chosenPlayer === player.playerName && chosePlayerAt && Math.round(chosePlayerAt / 60 / 60 / 60 * 100 , 2)/100 }
           </span>
           <br/>
         </div>
@@ -179,6 +207,8 @@ export default class SpyfallGameRoom extends React.Component {
             return globals.roleIsEvil(p.role)
           }).length } spies total
         </span>
+        <h2>Who do you think is the Spy?</h2>
+        { this.getPlayerList() }
         { this.getPermanentGameStateDiv() }
         <br/>
         <br/>
