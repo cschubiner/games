@@ -1,5 +1,149 @@
+.bold {
+  font-weight: bold;
+}
+
+.italics {
+  font-style: italic;
+}
+
+.evil {
+  color: red;
+}
+
+.good {
+  color: lightblue;
+}
+
+.black {
+  color: black;
+}
+
+.gameMessage {
+  font-size: 25px;
+  width: 341px;
+}
+
+.message_neutral {
+  color: white;
+}
+
+.message_good {
+  color: #76ff76;
+}
+
+.message_evil {
+  color: red;
+}
+
+
+.yellow {
+  color: #f9ff00;
+}
+
+.blue {
+  color: #00ffe9;
+}
+
+.green {
+  color: #76ff76;
+}
+
+input[type=checkbox] {
+  /* Double-sized Checkboxes */
+  -ms-transform: scale(2); /* IE */
+  -moz-transform: scale(2); /* FF */
+  -webkit-transform: scale(2); /* Safari and Chrome */
+  -o-transform: scale(2); /* Opera */
+  padding: 10px;
+}
+
+.roomButtonDiv {
+  margin-bottom: 10px;
+}
+
+.checkboxtext:hover {
+  cursor: pointer;
+}
+
+.checkboxtext
+{
+  /* Checkbox text */
+  padding-left: 10px;
+  font-size: 18px;
+  display: inline;
+}
+
+.checkbox-div {
+  padding: 5px 0px;
+}
+
+.spectator {
+  background-color: black;
+  background-image: url("https://i.ytimg.com/vi/aiAmAcaDQrM/maxresdefault.jpg");
+  background-image: url("http://www.nicholasbuer.com/wp-content/uploads/2015/05/Fuencaliente-Pano.jpg");
+  background-image: url("http://wallpoper.com/images/00/41/57/12/stones-excalibur_00415712.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+
+  color: white;
+  display: flex;
+  justify-content: center;
+}
+
+.inner-spectator{
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.inner-div {
+  padding: 10px;
+}
+
+.outer-div {
+  position: absolute; top: 0; left: 0; height: 100%; width: 100%;
+}
+
 body {
-  margin: 0;
-  padding: 0;
-  font-family: sans-serif;
+  margin:0;
+}
+
+.failedQuest {
+  color: red !important;
+}
+
+.succeededQuest {
+  color: lightgreen !important;
+}
+
+.failed-proposals{
+  margin-top: 5px;
+  color: gray;
+  font-style: italic;
+}
+
+.flex-center-horiz {
+  display: flex;
+  justify-content: center;
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+}
+
+.numberCircle {
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 10px;
+
+    width: 36px;
+    height: 36px;
+    padding: 8px;
+
+    color: rgba(255, 255, 255, 0.81);
+
+    background: rgba(0, 0, 0, 0.25);
+    border: 2px solid;
+    text-align: center;
+
+    font: 32px Arial, sans-serif;
 }
