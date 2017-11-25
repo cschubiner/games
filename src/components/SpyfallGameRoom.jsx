@@ -114,7 +114,7 @@ export default class SpyfallGameRoom extends React.Component {
        });
 
       window.history.pushState({}, "Spyfall",
-        "http://localhost:3001/?spyfall=true&debug=true&playerName=" + this.props.playerName
+        "https://cschubiner.github.io/games/?spyfall=true&debug=true&playerName=" + this.props.playerName
         + "&roomCode=" + this.props.roomCode
       );
     });
