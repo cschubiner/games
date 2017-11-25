@@ -79,7 +79,7 @@ export default class SpyfallGameRoom extends React.Component {
   }
 
   sortedPlayers() {
-    return this.props.players.sort( (p1, p2) => {
+    return this.props.players.sort((p1, p2) => {
       return p1.playerName.localeCompare(p2.playerName);
     });
   }
