@@ -30,7 +30,7 @@ export default class SpyfallGameRoom extends React.Component {
 
   // this is the controlling player. it is the player that corresponds to this browser
   getCurrentPlayer() {
-    return this.props.players.find(p =>
+    return this.players().find(p =>
       p.playerName === this.props.playerName
     );
   }
@@ -41,6 +41,14 @@ export default class SpyfallGameRoom extends React.Component {
 
   amIGood() {
     return !this.amIEvil();
+  }
+
+  players() {
+    if (this.state.players) {
+      return Object.values(this.state.players);
+    }
+
+    return this.props.players;
   }
 
   componentDidMount() {
@@ -63,9 +71,23 @@ export default class SpyfallGameRoom extends React.Component {
         gameStateRef.update({isPaused: false});
       }
 
-      if (!gameState || !gameState.location) {
-        gameStateRef.update({location: _.sample(Object.keys(rolesJson))});
+      let location = gameState && gameState.location;
+      if (!location) {
+        location = _.sample(Object.keys(rolesJson))
+        // Set the location
+        gameStateRef.update({location: location});
       }
+
+      let i = 0;
+      const locationRoles = _.shuffle(rolesJson[location]);
+      this.players().filter(p => !globals.roleIsEvil(p.role) && !p.locationRole).forEach((player) => {
+         const playerRef = new Firebase(`https://avalon-online-53e63.firebaseio.com/games/${this.props.roomCode}/players/${player.playerName}`);
+         playerRef.update({
+           locationRole: locationRoles[i],
+         });
+
+         i += 1;
+       });
 
       window.history.pushState({}, "Spyfall",
         "http://localhost:3001/?spyfall=true&debug=true&playerName=" + this.props.playerName
@@ -103,7 +125,7 @@ export default class SpyfallGameRoom extends React.Component {
   }
 
   sortedPlayers() {
-    return this.props.players.sort((p1, p2) => {
+    return this.players().sort((p1, p2) => {
       return p1.playerName.localeCompare(p2.playerName);
     });
   }
@@ -153,7 +175,7 @@ export default class SpyfallGameRoom extends React.Component {
       <div className="inner-div">
         <h1>Spyfall Game Room: {this.props.roomCode}</h1>
         <span>
-          There are { this.props.players.filter(p => {
+          There are { this.players().filter(p => {
             return globals.roleIsEvil(p.role)
           }).length } spies total
         </span>
@@ -167,7 +189,7 @@ export default class SpyfallGameRoom extends React.Component {
         <br/>
         <br/>
         <h2>Your name is: <span className='bold'>{ this.props.playerName }</span></h2>
-        <h2>Your role is: <span className='bold'>{ this.getCurrentPlayer() && this.getCurrentPlayer().role }</span></h2>
+        <h2>Your role is: <span className='bold'>{ this.getCurrentPlayer() && this.getCurrentPlayer().locationRole || this.getCurrentPlayer().role}</span></h2>
         { this.amIGood() &&
           <h2>The location is: <span className='bold'>{ this.state.gameState.location }</span></h2>
         }
