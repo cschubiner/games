@@ -63,6 +63,10 @@ export default class SpyfallGameRoom extends React.Component {
         gameStateRef.update({isPaused: false});
       }
 
+      if (!gameState || !gameState.location) {
+        gameStateRef.update({location: _.sample(Object.keys(rolesJson))});
+      }
+
       window.history.pushState({}, "Spyfall",
         "http://localhost:3001/?spyfall=true&debug=true&playerName=" + this.props.playerName
         + "&roomCode=" + this.props.roomCode
@@ -83,13 +87,16 @@ export default class SpyfallGameRoom extends React.Component {
       <div>
         <div>
           Current Time: {this.state.gameState.startTime}
-          {
-            Object.keys(rolesJson).map(location => {
-              return (
-                <span>{location}</span>
-              );
-            })
-          }
+          Possible locations:
+          <ul>
+            {
+              Object.keys(rolesJson).map(location => {
+                return (
+                  <li>{location}</li>
+                );
+              })
+            }
+          </ul>
         </div>
       </div>
     );
@@ -161,6 +168,9 @@ export default class SpyfallGameRoom extends React.Component {
         <br/>
         <h2>Your name is: <span className='bold'>{ this.props.playerName }</span></h2>
         <h2>Your role is: <span className='bold'>{ this.getCurrentPlayer() && this.getCurrentPlayer().role }</span></h2>
+        { this.amIGood() &&
+          <h2>The location is: <span className='bold'>{ this.state.gameState.location }</span></h2>
+        }
       </div>
       </div>
     );
