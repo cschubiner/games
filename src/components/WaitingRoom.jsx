@@ -76,7 +76,7 @@ export default class WaitingRoom extends React.Component {
     });
   }
 
-  startGameClicked(gameName) {
+  startGameClicked(gameName, roleSet = null) {
     let roleNames;
     if (gameName === AVALON) {
       roleNames = _.shuffle(globals.roleNamesForPlayerCountAvalon(this.state.players.length));
@@ -98,6 +98,7 @@ export default class WaitingRoom extends React.Component {
     gameRef.update({
       hasStarted: true,
       gameName: gameName,
+      roleSet: roleSet,
     });
 
     this.setState({gameName});
@@ -146,8 +147,14 @@ export default class WaitingRoom extends React.Component {
         <button type="button" onClick={this.startGameClicked.bind(this, AVALON)}>
           Start Avalon
         </button>
-        <button type="button" onClick={this.startGameClicked.bind(this, SPYFALL)}>
-          Start Spyfall
+        <button type="button" onClick={this.startGameClicked.bind(this, SPYFALL, 'rolesMichael.json')}>
+          Start Spyfall (Michael Locations)
+        </button>
+        <button type="button" onClick={this.startGameClicked.bind(this, SPYFALL, 'rolesSeven.json')}>
+          Start Spyfall (7-Role Locations)
+        </button>
+        <button type="button" onClick={this.startGameClicked.bind(this, SPYFALL, 'rolesTen.json')}>
+          Start Spyfall (10-Role Locations)
         </button>
       </div>
     );

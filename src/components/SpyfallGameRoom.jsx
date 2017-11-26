@@ -6,7 +6,9 @@ import globals from '../globals.js'
 import RoleList from './RoleList.jsx';
 import YourInfo from './YourInfo.jsx';
 import jsonfile from 'jsonfile';
-import rolesJson from '../roles.json';
+import rolesMichael from '../rolesMichael.json';
+import rolesSeven from '../rolesSeven.json';
+import rolesTen from '../rolesTen.json';
 
 const propTypes = {
   roomCode: PropTypes.string.isRequired,
@@ -26,6 +28,24 @@ export default class SpyfallGameRoom extends React.Component {
         isPaused: false,
       },
     }
+  }
+
+  // memoize locationJson
+  getLocationJson(fileName = null) {
+    if (this.locationJson) {
+      return this.locationJson;
+    }
+
+    if (fileName == 'rolesMichael.json') {
+      this.locationJson = rolesMichael;
+    }
+    if (fileName == 'rolesSeven.json') {
+      this.locationJson = rolesSeven;
+    }
+
+    this.locationJson = rolesTen;
+
+    return this.locationJson;
   }
 
   // this is the controlling player. it is the player that corresponds to this browser
@@ -86,8 +106,8 @@ export default class SpyfallGameRoom extends React.Component {
   setInitialGameState() {
     const gameStateRef = new Firebase(`https://avalon-online-53e63.firebaseio.com/games/${this.props.roomCode}/gameState`);
     gameStateRef.once("value", (snapshot) => {
-      const gameState = snapshot.val();
-      if (!gameState || !gameState.isPaused) {
+      const gameState = snapshot.val() || {};
+      if (!gameState.isPaused) {
         gameStateRef.update({isPaused: false});
       }
 
@@ -95,15 +115,17 @@ export default class SpyfallGameRoom extends React.Component {
         gameStateRef.update({startTime: Date.now()});
       }
 
-      let location = gameState && gameState.location;
+      this.getLocationJson(gameState.roleSet);
+
+      let location = gameState.location;
       if (!location) {
-        location = _.sample(Object.keys(rolesJson))
+        location = _.sample(Object.keys(this.getLocationJson()))
         // Set the location
         gameStateRef.update({location: location});
       }
 
       let i = 0;
-      const locationRoles = _.shuffle(rolesJson[location]);
+      const locationRoles = _.shuffle(this.getLocationJson()[location]);
       this.players().filter(p => !globals.roleIsEvil(p.role) && !p.locationRole).forEach((player) => {
          const playerRef = new Firebase(`https://avalon-online-53e63.firebaseio.com/games/${this.props.roomCode}/players/${player.playerName}`);
          playerRef.update({
@@ -114,7 +136,7 @@ export default class SpyfallGameRoom extends React.Component {
        });
 
       window.history.pushState({}, "Spyfall",
-        "https://cschubiner.github.io/games/?spyfall=true&debug=true&playerName=" + this.props.playerName
+        window.location.origin + "/games/?spyfall=true&debug=true&playerName=" + this.props.playerName
         + "&roomCode=" + this.props.roomCode
       );
     });
@@ -136,7 +158,7 @@ export default class SpyfallGameRoom extends React.Component {
           Possible locations:
           <ul>
             {
-              Object.keys(rolesJson).map(location => {
+              Object.keys(this.getLocationJson()).map(location => {
                 return (
                   <li>{location}</li>
                 );
@@ -203,9 +225,9 @@ export default class SpyfallGameRoom extends React.Component {
       <div className="inner-div">
         <h1>Spyfall Game Room: {this.props.roomCode}</h1>
         <span>
-          There are { this.players().filter(p => {
+          There is { this.players().filter(p => {
             return globals.roleIsEvil(p.role)
-          }).length } spies total
+          }).length } spy total
         </span>
         <h2>Who do you think is the Spy?</h2>
         { this.getPlayerList() }
