@@ -32,18 +32,23 @@ export default class SpyfallGameRoom extends React.Component {
 
   // memoize locationJson
   getLocationJson(fileName = null) {
-    if (this.locationJson) {
-      return this.locationJson;
+    if (this.state.locationJson || this.locationJson) {
+      return this.state.locationJson || this.locationJson;
+    }
+
+    if (!fileName) {
+      return {};
     }
 
     if (fileName == 'rolesMichael.json') {
       this.locationJson = rolesMichael;
-    }
-    if (fileName == 'rolesSeven.json') {
+    } else if (fileName == 'rolesSeven.json') {
       this.locationJson = rolesSeven;
+    } else {
+      this.locationJson = rolesTen;
     }
 
-    this.locationJson = rolesTen;
+    this.setState({locationJson: this.locationJson});
 
     return this.locationJson;
   }
@@ -104,9 +109,15 @@ export default class SpyfallGameRoom extends React.Component {
   }
 
   setInitialGameState() {
-    const gameStateRef = new Firebase(`https://avalon-online-53e63.firebaseio.com/games/${this.props.roomCode}/gameState`);
-    gameStateRef.once("value", (snapshot) => {
-      const gameState = snapshot.val() || {};
+    const gameRef = new Firebase(`https://avalon-online-53e63.firebaseio.com/games/${this.props.roomCode}`);
+    gameRef.once("value", (snapshot) => {
+      const game = snapshot.val() || {};
+      this.getLocationJson(game.roleSet);
+
+      const gameStateRef = new Firebase(`https://avalon-online-53e63.firebaseio.com/games/${this.props.roomCode}/gameState`);
+
+      const gameState = game.gameState || {};
+
       if (!gameState.isPaused) {
         gameStateRef.update({isPaused: false});
       }
@@ -115,9 +126,8 @@ export default class SpyfallGameRoom extends React.Component {
         gameStateRef.update({startTime: Date.now()});
       }
 
-      this.getLocationJson(gameState.roleSet);
-
       let location = gameState.location;
+      debugger;
       if (!location) {
         location = _.sample(Object.keys(this.getLocationJson()))
         // Set the location
