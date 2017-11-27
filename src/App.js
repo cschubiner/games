@@ -128,7 +128,7 @@ export default class App extends React.Component {
 
     return (
       <div>
-        <h2>Avalon 2.0 and Spyfall 1.4</h2>
+        <h2>Avalon 2.0 and Spyfall 1.5</h2>
         {!this.state.facebook && <FacebookLogin
             appId={window.location.origin.indexOf("github") !== -1 ? "1777903595843541" : "144285902885696"}
             autoLoad={true}
@@ -191,11 +191,15 @@ export default class App extends React.Component {
   }
 
   getGameRoom() {
+    if (!this.state.facebook) {
+      return null;
+    }
+
     if (this.getURLParams().spyfall) {
       return (
         <SpyfallGameRoom
           roomCode={this.getDefaultRoomCode()}
-          playerName={(this.state.wantsToJoinLastHand && this.state.playerName) || this.getURLParams().playerName}
+          playerName={(this.state.wantsToJoinLastHand && this.state.playerName) || (this.getURLParams().allowPlayerName && this.getURLParams().playerName) || this.state.facebook.name}
           players={this.state.players}
         />
       );
@@ -203,7 +207,7 @@ export default class App extends React.Component {
     return (
       <GameRoom
         roomCode={this.getDefaultRoomCode()}
-        playerName={this.state.wantsToJoinLastHand ? this.state.playerName : this.getURLParams().playerName}
+        playerName={this.state.wantsToJoinLastHand ? this.state.playerName : (this.getURLParams().allowPlayerName && this.getURLParams().playerName) || this.state.facebook.name}
         players={this.state.players}
       />
     );

@@ -127,7 +127,6 @@ export default class SpyfallGameRoom extends React.Component {
       }
 
       let location = gameState.location;
-      debugger;
       if (!location) {
         location = _.sample(Object.keys(this.getLocationJson()))
         // Set the location
@@ -146,8 +145,7 @@ export default class SpyfallGameRoom extends React.Component {
        });
 
       window.history.pushState({}, "Spyfall",
-        window.location.origin + "/games/?spyfall=true&debug=true&playerName=" + this.props.playerName
-        + "&roomCode=" + this.props.roomCode
+        window.location.origin + "/games/?spyfall=true&debug=true"+ "&roomCode=" + this.props.roomCode
       );
     });
   }
