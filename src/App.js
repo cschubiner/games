@@ -8,8 +8,9 @@ import SpectatorRoom from './components/SpectatorRoom.jsx'; //delete!
 import _ from 'lodash';
 import queryString from 'query-string';
 import globals from './globals.js'
-const amplifyStore = require('amplify-store');
+import FacebookLogin from 'react-facebook-login';
 
+const amplifyStore = require('amplify-store');
 
 export default class App extends React.Component {
   constructor(props) {
@@ -21,6 +22,8 @@ export default class App extends React.Component {
       players: [], //delete
       wantsToJoinLastHand: false,
     }
+
+    this.facebookCallback = this.facebookCallback.bind(this);
   }
 
   getURLParams() {
@@ -103,6 +106,12 @@ export default class App extends React.Component {
     this.populatePlayerState();
   }
 
+  facebookCallback(facebook) {
+    amplifyStore('facebook', facebook);
+
+    this.setState({facebook});
+  }
+
   getMainMenu() {
     const lastHandState = amplifyStore(globals.lastHandStore);
     const lastHand = (
@@ -119,15 +128,28 @@ export default class App extends React.Component {
 
     return (
       <div>
-        <h2>Avalon 2.0 and Spyfall 1.3</h2>
-        { lastHandState ? lastHand : null }
-        <p>Join an existing game: </p>
-        { this.getRoomList() }
-        <br/>
-        Create a new game:<br/>
-        <button type="button" onClick={this.gameClicked.bind(this, null)}>
-          New Game
-        </button>
+        <h2>Avalon 2.0 and Spyfall 1.4</h2>
+        {!this.state.facebook && <FacebookLogin
+            appId="144285902885696"
+            autoLoad={true}
+            fields="name,email,picture"
+            callback={this.facebookCallback}
+            cssClass="my-facebook-button-class"
+            icon="fa-facebook"
+        />}
+        { this.state.facebook &&
+          <div>
+            <h3>{`Successfully logged in as ${this.state.facebook.name}`}</h3>
+            { lastHandState ? lastHand : null }
+            <p>Join an existing game: </p>
+            { this.getRoomList() }
+            <br/>
+            Create a new game:<br/>
+            <button type="button" onClick={this.gameClicked.bind(this, null)}>
+              New Game
+            </button>
+          </div>
+        }
       </div>
     );
   }

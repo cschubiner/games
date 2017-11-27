@@ -1,3 +1,5 @@
+const amplifyStore = require('amplify-store');
+
 var globals = {};
 
 globals.MESSAGE_NEUTRAL = 'message_neutral';
@@ -26,6 +28,11 @@ globals.numFailsToFail = (questNum, numPlayers) => {
     return 2;
 
   return 1;
+};
+
+
+globals.getFacebookCreds = () => {
+  return amplifyStore('facebook');
 };
 
 globals.roleIsEvil = (role) => {

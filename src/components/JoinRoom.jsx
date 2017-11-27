@@ -21,22 +21,15 @@ export default class JoinRoom extends React.Component {
 
   handleSubmit(isSpectator, e) {
     e.preventDefault();
-    if (!isSpectator && (this.state.playerName.length <= 2 || this.state.playerName.length >= 15)) {
-      alert("Your name must be between 3 and 15 characters.");
-    } else {
-      const newState = {
-        playerName: this.state.playerName.trim(),
-        isOnJoinRoom: false,
-        isSpectator: isSpectator,
-        roomCode: this.props.roomCode,
-      };
-      amplifyStore(globals.lastHandStore, newState);
-      this.setState(newState);
-    }
-  }
 
-  handleNameChange(e) {
-    this.setState({ playerName: e.target.value.toUpperCase() })
+    const newState = {
+      playerName: globals.getFacebookCreds().name,
+      isOnJoinRoom: false,
+      isSpectator: isSpectator,
+      roomCode: this.props.roomCode,
+    };
+    amplifyStore(globals.lastHandStore, newState);
+    this.setState(newState);
   }
 
   getJoinRoom() {
@@ -44,18 +37,7 @@ export default class JoinRoom extends React.Component {
       <div>
         <h3>Joining Room</h3>
         <h1>{this.props.roomCode}</h1>
-        <p> Go to cschubiner.github.io/avalon-online and enter the room code <span className="bold">{this.props.roomCode}</span> to join! </p>
-        <p> Choose a name: </p>
-        <form className="nameForm" onSubmit={this.handleSubmit.bind(this, false)}>
-          <input
-            type="text"
-            placeholder="John Smith"
-            value={this.state.playerName}
-            onChange={this.handleNameChange.bind(this)}
-          />
-        </form>
-
-        <br/>
+        <p> Go to cschubiner.github.io/games and enter the room code <span className="bold">{this.props.roomCode}</span> to join! </p>
 
         <button type="button" onClick={this.handleSubmit.bind(this, false)}>
           Join as Player
