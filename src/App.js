@@ -130,7 +130,7 @@ export default class App extends React.Component {
       <div>
         <h2>Avalon 2.0 and Spyfall 1.4</h2>
         {!this.state.facebook && <FacebookLogin
-            appId="144285902885696"
+            appId={window.location.origin.indexOf("github") !== -1 ? "1777903595843541" : "144285902885696"}
             autoLoad={true}
             fields="name,email,picture"
             callback={this.facebookCallback}
